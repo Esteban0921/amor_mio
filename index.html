@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polaroids para mi amor</title>
+    <style>
+        /* Fuente personalizada: Asegúrate de subir HelloBaby.ttf a GitHub */
+        @font-face {
+            font-family: 'Hello Baby';
+            src: url('HelloBaby.ttf') format('truetype');
+        }
+        
+        /* Variables CSS para ajustar tamaños dinámicamente */
+        :root {
+            --card-width: 4cm;
+            --card-height: 5cm;
+            --img-height: 3.6cm;
+            --padding: 0.2cm;
+            --spacing: 0.5cm;
+            --font-size: 14px;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .no-print {
+            text-align: center;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: #e83e8c;
+            font-size: 1.2rem;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .romantic-note {
+            background-color: #ffe6f2;
+            border: 2px dashed #ffb3d9;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #d63384;
+            font-style: italic;
+            line-height: 1.5;
+        }
+
+        .controls, .advanced-settings {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .advanced-settings {
+            font-size: 0.9rem;
+        }
+
+        .setting-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        button {
+            background-color: #d81b60;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #ad144b;
+        }
+
+        select, input[type="range"] {
+            padding: 5px;
+            font-size: 14px;
+        }
+
+        .page {
+            background: white;
+            /* Dimensiones exactas de hoja Carta (Letter) */
+            width: 21.59cm; 
+            min-height: 27.94cm; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            padding: 1cm;
+            box-sizing: border-box;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            justify-content: center;
+        }
+
+        .polaroid {
+            width: var(--card-width);
+            height: var(--card-height);
+            background: white;
+            /* Línea delgada para recortar, sin sombras */
+            border: 1px solid #999; 
+            padding: var(--padding);
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            margin: var(--spacing);
+            page-break-inside: avoid;
+            transition: width 0.3s, height 0.3s, padding 0.3s;
+        }
+
+        .polaroid-img-container {
+            width: 100%;
+            height: var(--img-height);
+            overflow: hidden;
+            background-color: #e2e8f0;
+            position: relative;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            transition: height 0.3s;
+        }
+
+        /* Mensaje flotante al pasar el ratón */
+        .polaroid-img-container::after {
+            content: "Clic para subir foto";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            pointer-events: none;
+        }
+        
+        .polaroid-img-container:hover::after {
+            opacity: 1;
+        }
+
+        .polaroid img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .polaroid-text {
+            font-family: 'Hello Baby', 'Caveat', cursive, sans-serif;
+            text-align: center;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size);
+            color: #333;
+            outline: none;
+            overflow: hidden;
+            padding-top: 2px;
+            white-space: nowrap;
+        }
+        
+        .polaroid-text:focus {
+            background-color: #f8f9fa;
+            border-bottom: 1px dashed #007bff;
+        }
+
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+                margin: 0;
+            }
+            .no-print {
+                display: none; /* Oculta todo el menú al imprimir */
+            }
+            .page {
+                box-shadow: none;
+                padding: 0;
+                margin: 0;
+                width: 21.59cm;
+                height: 27.94cm;
+            }
+            .polaroid-img-container::after {
+                display: none !important;
+            }
+            .polaroid-img-container {
+                border: none;
+            }
+            .polaroid-text:focus {
+                border: none;
+            }
+            @page {
+                size: letter;
+                margin: 0.5cm;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="no-print">
+        <h1>Plantilla de Fotos Polaroid</h1>
+        <p class="subtitle">Para el amor de mi vida ✨</p>
+        
+        <div class="romantic-note">
+            "Te amo con todo mi corazón. Sé que todo saldrá hermoso en el cumpleaños de tu mejor amiga, eres increíble en todo lo que haces y estoy muy orgulloso de ti. Que estas fotos te recuerden lo hermosa que eres." ❤️
+        </div>
+
+        <div class="controls">
+            <label for="size-preset"><strong>Formato:</strong></label>
+            <select id="size-preset">
+                <option value="custom">Personalizado (4x5 cm)</option>
+                <option value="mini">Polaroid Mini (5.4x8.6 cm)</option>
+                <option value="square">Polaroid Cuadrada (7.2x8.6 cm)</option>
+                <option value="wide">Polaroid Ancha (10.8x8.6 cm)</option>
+            </select>
+            <button onclick="window.print()">🖨️️ Imprimir Plantilla</button>
+        </div>
+
+        <div class="advanced-settings">
+            <div class="setting-group">
+                <label>Ancho (cm): <span id="val-width">4</span></label>
+                <input type="range" id="set-width" min="3" max="15" step="0.1" value="4">
+            </div>
+            <div class="setting-group">
+                <label>Alto (cm): <span id="val-height">5</span></label>
+                <input type="range" id="set-height" min="4" max="15" step="0.1" value="5">
+            </div>
+            <div class="setting-group">
+                <label>Alto Foto (cm): <span id="val-img">3.6</span></label>
+                <input type="range" id="set-img" min="2" max="12" step="0.1" value="3.6">
+            </div>
+            <div class="setting-group">
+                <label>Sangría (cm): <span id="val-pad">0.2</span></label>
+                <input type="range" id="set-pad" min="0.1" max="1" step="0.1" value="0.2">
+            </div>
+            <div class="setting-group">
+                <label>Espacio (cm): <span id="val-space">0.5</span></label>
+                <input type="range" id="set-space" min="0" max="2" step="0.1" value="0.5">
+            </div>
+            <div class="setting-group">
+                <label>Texto (px): <span id="val-font">14</span></label>
+                <input type="range" id="set-font" min="10" max="30" step="1" value="14">
+            </div>
+        </div>
+        <p style="font-size: 14px; color: #555; background: #e9ecef; padding: 10px; border-radius: 5px;">
+            💡 <strong>Instrucciones:</strong> Haz clic en los cuadros grises para subir las fotos desde tu dispositivo. Haz clic en el texto para editar el mensaje.
+        </p>
+    </div>
+
+    <!-- Contenedor donde se generarán las fotos -->
+    <div class="page" id="page"></div>
+
+    <script>
+        // Crear 12 tarjetas vacías por defecto
+        const placeholders = Array(12).fill({
+            text: "Escribe aquí..."
+        });
+
+        const page = document.getElementById('page');
+
+        // Función para renderizar las tarjetas Polaroid
+        placeholders.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'polaroid';
+
+            const imgContainer = document.createElement('div');
+            imgContainer.className = 'polaroid-img-container';
+            imgContainer.title = "Haz clic para subir tu foto";
+
+            // Imagen transparente inicial
+            const img = document.createElement('img');
+            // Un pequeño pixel transparente por defecto
+            img.src = "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="; 
+            img.alt = "Foto subida por el usuario";
+
+            // Lógica para subir archivo al hacer clic en el recuadro
+            imgContainer.addEventListener('click', () => {
+                const fileInput = document.createElement('input');
+                fileInput.type = 'file';
+                fileInput.accept = 'image/*'; // Solo permite imágenes
+                
+                fileInput.onchange = (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            img.src = event.target.result; // Muestra la imagen seleccionada
+                            imgContainer.style.backgroundColor = "transparent"; 
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                };
+                fileInput.click();
+            });
+
+            // Campo de texto editable
+            const textDiv = document.createElement('div');
+            textDiv.className = 'polaroid-text';
+            textDiv.contentEditable = "true"; 
+            textDiv.innerText = item.text;
+            textDiv.setAttribute('spellcheck', 'false');
+
+            // Ensamblar la tarjeta
+            imgContainer.appendChild(img);
+            card.appendChild(imgContainer);
+            card.appendChild(textDiv);
+            page.appendChild(card);
+        });
+
+        // Lógica de los controles deslizantes (Sliders) para ajustes avanzados
+        const root = document.documentElement;
+        const inputs = ['width', 'height', 'img', 'pad', 'space', 'font'];
+        const units = ['cm', 'cm', 'cm', 'cm', 'cm', 'px'];
+        const cssVars = ['--card-width', '--card-height', '--img-height', '--padding', '--spacing', '--font-size'];
+
+        function updateSetting(index, value) {
+            document.getElementById(`val-${inputs[index]}`).innerText = value;
+            root.style.setProperty(cssVars[index], value + units[index]);
+            document.getElementById(`set-${inputs[index]}`).value = value;
+        }
+
+        // Escuchar cambios en los sliders
+        inputs.forEach((id, index) => {
+            document.getElementById(`set-${id}`).addEventListener('input', (e) => {
+                updateSetting(index, e.target.value);
+                // Si el usuario mueve un slider, cambiamos el selector a "Personalizado"
+                document.getElementById('size-preset').value = 'custom';
+            });
+        });
+
+        // Cambiar entre tamaños de Polaroid del mundo real predefinidos
+        document.getElementById('size-preset').addEventListener('change', (e) => {
+            const v = e.target.value;
+            if (v === 'mini') {
+                updateSetting(0, 5.4); updateSetting(1, 8.6); updateSetting(2, 6.2); updateSetting(3, 0.4); updateSetting(5, 18);
+            } else if (v === 'square') {
+                updateSetting(0, 7.2); updateSetting(1, 8.6); updateSetting(2, 6.2); updateSetting(3, 0.4); updateSetting(5, 20);
+            } else if (v === 'wide') {
+                updateSetting(0, 10.8); updateSetting(1, 8.6); updateSetting(2, 6.2); updateSetting(3, 0.4); updateSetting(5, 22);
+            } else if (v === 'custom') {
+                updateSetting(0, 4); updateSetting(1, 5); updateSetting(2, 3.6); updateSetting(3, 0.2); updateSetting(5, 14);
+            }
+        });
+    </script>
+</body>
+</html>

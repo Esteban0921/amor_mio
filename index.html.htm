@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Fotos Favoritas - Para Imprimir</title>
+    
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap');
+
+    @font-face {
+        font-family: 'Hello Baby';
+        src: local('Hello Baby'), url('HelloBaby.ttf') format('truetype');
+        /* Busca la fuente instalada en tu PC, o el archivo local 'HelloBaby.ttf' */
+    }
+
+    /* Variables CSS para permitir el cambio dinámico de tamaños */
+    :root {
+        --card-width: 4cm;
+        --card-height: 5cm;
+        --photo-padding: 0.4cm 0.4cm 0 0.4cm;
+        --image-height: 3.6cm;
+        --caption-height: 1cm;
+        --caption-font-size: 1.4rem;
+        --grid-gap: 1cm;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e0e4e8;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .controls {
+            text-align: center;
+            margin-bottom: 30px;
+            background: white;
+            padding: 20px 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            max-width: 600px;
+        }
+
+        h1 {
+            color: #d81b60;
+            margin-top: 0;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #ad144b;
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+
+        .romantic-note {
+            background-color: #fce4ec;
+            border-left: 4px solid #d81b60;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            text-align: left;
+            font-family: 'Georgia', serif;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .controls p {
+        font-size: 0.95rem;
+        color: #555;
+        margin-bottom: 20px;
+    }
+
+    .options-container {
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        font-size: 1rem;
+    }
+
+    select {
+        padding: 8px 12px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        font-size: 1rem;
+        font-family: inherit;
+        cursor: pointer;
+        background-color: white;
+    }
+
+    /* Estilos para el nuevo panel de ajustes avanzados */
+    .advanced-controls {
+        margin-top: 25px;
+        margin-bottom: 25px;
+        padding-top: 20px;
+        border-top: 1px solid #e0e0e0;
+        text-align: left;
+    }
+
+    .advanced-controls h3 {
+        margin-top: 0;
+        font-size: 1.1rem;
+        color: #444;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+
+    .sliders-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 15px;
+    }
+
+    .slider-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .slider-group label {
+        font-size: 0.85rem;
+        color: #666;
+        margin-bottom: 5px;
+        display: flex;
+        justify-content: space-between;
+        font-weight: 500;
+    }
+
+    .slider-group input[type="range"] {
+        width: 100%;
+        accent-color: #d81b60;
+    }
+
+    .btn-print {
+        background-color: #d81b60;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(216, 27, 96, 0.3);
+            transition: background-color 0.3s, transform 0.1s;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-print:hover {
+            background-color: #ad144b;
+            transform: translateY(-2px);
+        }
+
+        .btn-print:active {
+            transform: translateY(0);
+        }
+
+        .page-container {
+        /* 
+           Dimensiones de tamaño Carta (Letter): 8.5 x 11 pulgadas
+           Equivalente aprox: 21.59cm x 27.94cm 
+        */
+        width: 21.59cm;
+        min-height: 27.94cm;
+        background-color: white;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        margin: 0 auto;
+        
+        /* Padding interno de la hoja para que las fotos no toquen el borde */
+        padding: 1.5cm;
+        box-sizing: border-box;
+
+        /* Cuadrícula flexible para organizar las fotos */
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-content: flex-start;
+        gap: var(--grid-gap); /* Espacio uniforme entre las polaroids */
+    }
+
+    .polaroid-card {
+        background-color: white;
+        width: var(--card-width);
+        height: var(--card-height);
+        
+        /* Padding ajustado dinámicamente según el tamaño elegido */
+        padding: var(--photo-padding); 
+        
+        box-shadow: none; /* Sin sombra para un look plano de impresión */
+        border: 1px solid #999; /* Línea delgada como guía para recortar */
+        border-radius: 0; /* Bordes completamente rectos */
+        
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        box-sizing: border-box; 
+        overflow: hidden;
+        
+        /* Animación fluida al cambiar el tamaño desde el menú */
+        transition: width 0.3s, height 0.3s, padding 0.3s;
+    }
+
+    .image-container {
+        width: 100%;
+        height: var(--image-height); 
+        background-color: #f8f8f8;
+        overflow: hidden;
+        border: 1px solid #e0e0e0;
+        transition: height 0.3s;
+    }
+
+    .polaroid-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Centra y recorta las fotos automáticamente */
+        display: block;
+    }
+
+    .polaroid-caption {
+        font-family: 'Hello Baby', 'Caveat', cursive, sans-serif;
+        height: var(--caption-height);
+        line-height: var(--caption-height); /* Centrado vertical del texto */
+        text-align: center;
+        font-size: var(--caption-font-size); /* Tamaño dinámico del texto */
+        color: #111;
+        width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-weight: normal; /* Hello Baby suele verse mejor sin negrita extra */
+        
+        /* Estilos para hacerlo editable por el usuario */
+        outline: none; 
+        cursor: text; 
+        transition: background-color 0.2s;
+    }
+
+    .polaroid-caption:focus {
+        background-color: #f0f4f8; /* Fondo sutil al hacer clic para editar */
+        border-bottom: 1px dashed #2196F3; /* Indicador visual de edición */
+    }
+
+    @media print {
+        /* Configura la impresora en tamaño Carta y sin márgenes del navegador */
+        @page {
+            size: letter;
+            margin: 0;
+        }
+
+        body {
+            background-color: white;
+            margin: 0;
+            padding: 0;
+            /* Asegura que los colores de fondo y bordes se impriman tal cual */
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* Ocultar la cabecera y el botón de imprimir en el papel */
+        .controls {
+            display: none !important;
+        }
+
+        /* Ajustar el contenedor para que sea la página completa sin sombras */
+        .page-container {
+            box-shadow: none;
+            margin: 0;
+            width: 21.59cm;
+            height: 27.94cm;
+            page-break-after: always;
+        }
+
+        /* Asegurar que la línea de recorte se imprima y ocultar rastros de edición */
+        .polaroid-card {
+            border: 1px solid #999 !important;
+        }
+        
+        .polaroid-caption {
+            border: none !important;
+            background-color: transparent !important;
+        }
+    }
+</style>
+</head>
+<body>
+
+<div class="controls">
+    <h1>Plantilla de Impresión ❤️</h1>
+    <div class="subtitle">Para el amor de mi vida ✨</div>
+    
+    <div class="romantic-note">
+        <strong>Para ti, mi amor:</strong><br>
+        Te amo con todo mi corazón. Sé que el cumpleaños de tu mejor amiga será un día muy especial, y quiero que sepas que estoy seguro de que todo saldrá absolutamente bien y lo disfrutarán muchísimo. 💕
+    </div>
+
+    <p>Selecciona el tamaño de las fotos, <strong>haz clic en el texto debajo de las imágenes para editarlo</strong>, y cuando estés listo, imprime. La línea gris sirve como guía para recortar.<br>
+    <span style="display:inline-block; margin-top: 8px; font-size: 0.85rem; color: #888; background: #f5f5f5; padding: 5px 10px; border-radius: 4px;">
+        🖋️ <strong>Nota sobre la fuente:</strong> Para ver la letra "Hello Baby", instálala en tu computadora, o descarga el archivo de DaFont, nómbralo <code>HelloBaby.ttf</code> y guárdalo en la misma carpeta que esta plantilla.
+    </span>
+    </p>
+    
+    <div class="options-container">
+        <label for="size-selector"><strong>Formato:</strong></label>
+        <select id="size-selector" onchange="updateSize()">
+            <option value="small" selected>Personalizado (4 x 5 cm)</option>
+            <option value="mini">Estilo Mini (5.4 x 8.6 cm)</option>
+            <option value="square">Estilo Cuadrado (7.2 x 8.6 cm)</option>
+            <option value="wide">Estilo Ancho (10.8 x 8.6 cm)</option>
+        </select>
+    </div>
+
+    <div class="advanced-controls">
+        <h3>Ajustes Avanzados ⚙️</h3>
+        <div class="sliders-grid">
+            <div class="slider-group">
+                <label>Ancho Tarjeta: <span id="val-width">4cm</span></label>
+                <input type="range" id="slider-width" min="3" max="15" step="0.1" value="4">
+            </div>
+            <div class="slider-group">
+                <label>Alto Tarjeta: <span id="val-height">5cm</span></label>
+                <input type="range" id="slider-height" min="4" max="20" step="0.1" value="5">
+            </div>
+            <div class="slider-group">
+                <label>Sangría (Borde): <span id="val-padding">0.4cm</span></label>
+                <input type="range" id="slider-padding" min="0" max="1.5" step="0.1" value="0.4">
+            </div>
+            <div class="slider-group">
+                <label>Alto Imagen: <span id="val-img-height">3.6cm</span></label>
+                <input type="range" id="slider-img-height" min="2" max="18" step="0.1" value="3.6">
+            </div>
+            <div class="slider-group">
+                <label>Tamaño Texto: <span id="val-font">1.4rem</span></label>
+                <input type="range" id="slider-font" min="0.5" max="3" step="0.1" value="1.4">
+            </div>
+            <div class="slider-group">
+                <label>Espaciado Fotos: <span id="val-gap">1cm</span></label>
+                <input type="range" id="slider-gap" min="0" max="3" step="0.1" value="1">
+            </div>
+        </div>
+    </div>
+
+    <button class="btn-print" onclick="window.print()">
+        🖨️ Imprimir Plantilla
+    </button>
+</div>
+
+<div id="gallery" class="page-container"></div>
+
+<script>
+    // Diccionario de dimensiones predefinidas
+    const sizeConfigs = {
+        small: { width: 4, height: 5, padding: 0.4, imgHeight: 3.6, font: 1.4, gap: 1 },
+        mini: { width: 5.4, height: 8.6, padding: 0.5, imgHeight: 6.2, font: 1.6, gap: 1 },
+        square: { width: 7.2, height: 8.6, padding: 0.5, imgHeight: 6.2, font: 1.6, gap: 1 },
+        wide: { width: 10.8, height: 8.6, padding: 0.5, imgHeight: 6.2, font: 1.6, gap: 1 }
+    };
+
+    function initSliders() {
+        const root = document.documentElement;
+        const sliders = [
+            { id: 'slider-width', varName: '--card-width', unit: 'cm', label: 'val-width' },
+            { id: 'slider-height', varName: '--card-height', unit: 'cm', label: 'val-height' },
+            { id: 'slider-img-height', varName: '--image-height', unit: 'cm', label: 'val-img-height' },
+            { id: 'slider-font', varName: '--caption-font-size', unit: 'rem', label: 'val-font' },
+            { id: 'slider-gap', varName: '--grid-gap', unit: 'cm', label: 'val-gap' },
+        ];
+
+        // Event listener para sliders que mapean directamente a una variable CSS
+        sliders.forEach(s => {
+            const el = document.getElementById(s.id);
+            el.addEventListener('input', (e) => {
+                const val = e.target.value;
+                root.style.setProperty(s.varName, val + s.unit);
+                document.getElementById(s.label).textContent = val + s.unit;
+                updateCaptionHeight();
+            });
+        });
+
+        // Event listener especial para la sangría (padding) para mantener el borde inferior en cero
+        const padEl = document.getElementById('slider-padding');
+        padEl.addEventListener('input', (e) => {
+            const val = e.target.value;
+            root.style.setProperty('--photo-padding', `${val}cm ${val}cm 0 ${val}cm`);
+            document.getElementById('val-padding').textContent = val + 'cm';
+            updateCaptionHeight();
+        });
+    }
+
+    // Calcula el espacio restante en la tarjeta para el texto
+    function updateCaptionHeight() {
+        const h = parseFloat(document.getElementById('slider-height').value);
+        const imgH = parseFloat(document.getElementById('slider-img-height').value);
+        const pad = parseFloat(document.getElementById('slider-padding').value);
+        
+        const captionH = h - imgH - pad;
+        document.documentElement.style.setProperty('--caption-height', Math.max(0.3, captionH).toFixed(2) + 'cm');
+    }
+
+    // Sincroniza el menú desplegable con los sliders
+    function updateSize() {
+        const size = document.getElementById('size-selector').value;
+        if (sizeConfigs[size]) {
+            const config = sizeConfigs[size];
+            document.getElementById('slider-width').value = config.width;
+            document.getElementById('slider-height').value = config.height;
+            document.getElementById('slider-padding').value = config.padding;
+            document.getElementById('slider-img-height').value = config.imgHeight;
+            document.getElementById('slider-font').value = config.font;
+            document.getElementById('slider-gap').value = config.gap;
+            
+            // Disparamos los eventos 'input' para actualizar visualmente la página
+            ['slider-width', 'slider-height', 'slider-padding', 'slider-img-height', 'slider-font', 'slider-gap'].forEach(id => {
+                document.getElementById(id).dispatchEvent(new Event('input'));
+            });
+        }
+    }
+
+    // He cambiado las dimensiones de las fotos de ejemplo a 300x400 para simular fotos verticales
+    const jsonData = [
+            { "url": "https://placehold.co/300x400/ffebee/d81b60?text=Foto+1", "texto": "Nuestra primera cita 🥰" },
+            { "url": "https://placehold.co/300x400/e8f5e9/388e3c?text=Foto+2", "texto": "Viaje a la playa 🏖️" },
+            { "url": "https://placehold.co/300x400/e3f2fd/1976d2?text=Foto+3", "texto": "Tu sonrisa ✨" },
+            { "url": "https://placehold.co/300x400/fff3e0/f57c00?text=Foto+4", "texto": "Cumpleaños 🎂" },
+            { "url": "https://placehold.co/300x400/f3e5f5/8e24aa?text=Foto+5", "texto": "Tarde de películas 🍿" },
+            { "url": "https://placehold.co/300x400/e0f7fa/0097a7?text=Foto+6", "texto": "Caminando juntos 🚶" },
+            { "url": "https://placehold.co/300x400/fff8e1/ffa000?text=Foto+7", "texto": "Cena romántica 🍷" },
+            { "url": "https://placehold.co/300x400/e8eaf6/3f51b5?text=Foto+8", "texto": "Aventura de fin de semana 🏕️" },
+            { "url": "https://placehold.co/300x400/fbe9e7/ff5722?text=Foto+9", "texto": "Disfrazados 🎃" },
+            { "url": "https://placehold.co/300x400/e0f2f1/00796b?text=Foto+10", "texto": "Día nevado ❄️" },
+            { "url": "https://placehold.co/300x400/fce4ec/c2185b?text=Foto+11", "texto": "Nuestro concierto 🎵" },
+            { "url": "https://placehold.co/300x400/efebe9/795548?text=Foto+12", "texto": "Día de campo 🌻" }
+        ];
+
+        function renderGallery() {
+            const galleryContainer = document.getElementById('gallery');
+            galleryContainer.innerHTML = '';
+
+            jsonData.forEach(item => {
+                // Tarjeta principal
+                const card = document.createElement('div');
+                card.classList.add('polaroid-card');
+
+                // Contenedor de la foto
+                const imageContainer = document.createElement('div');
+                imageContainer.classList.add('image-container');
+
+                // La imagen
+                const img = document.createElement('img');
+                img.src = item.url;
+            img.alt = item.texto;
+            img.classList.add('polaroid-image');
+            
+            // El texto o leyenda (ahora editable directamente en la pantalla)
+            const caption = document.createElement('div');
+            caption.classList.add('polaroid-caption');
+            caption.textContent = item.texto;
+            caption.setAttribute('contenteditable', 'true');
+            caption.setAttribute('spellcheck', 'false'); // Oculta líneas rojas de corrección
+
+            // Ensamblando los elementos
+            imageContainer.appendChild(img);
+            card.appendChild(imageContainer);
+            card.appendChild(caption);
+
+            galleryContainer.appendChild(card);
+        });
+    }
+
+    // Ejecutar al cargar la página
+    window.onload = () => {
+        initSliders();
+        updateSize(); // Sincroniza y carga los valores iniciales
+        renderGallery();
+    };
+</script>
+
+</body>
+</html>
